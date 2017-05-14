@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
+using System;
 
 public class cube_behaviour : MonoBehaviour {
 
@@ -8,12 +10,14 @@ public class cube_behaviour : MonoBehaviour {
 
     private bool dragging = false;
     private float distance;
-    private bool moving = false;
+    public bool moving = false;
+    public int manh;
 
-    GameObject endMarker;
-    
+    public GameObject endMarker;
+    public UnityEngine.UI.Button solveB;
+
     Vector3 pos;
-    Vector3 emptyPos;
+    public Vector3 emptyPos;
 
     public GameObject[] locs = new GameObject[9];
 
@@ -36,6 +40,20 @@ public class cube_behaviour : MonoBehaviour {
 
         if(endMarker.transform.position != pos)
             control.GetComponent<controller>().updatePos(gameObject, endMarker);
+
+        if (control.GetComponent<ai>().solution.Count != 0)
+        {
+            if (gameObject.name.Substring(4) == (control.GetComponent<ai>().solution[0] - 1).ToString())
+            {
+                control.GetComponent<ai>().solution.RemoveAt(0);
+                solveB.GetComponentInChildren<UnityEngine.UI.Text>().text = "Perform next move (" + control.GetComponent<ai>().solution.Count.ToString() + ")";
+            }
+            else
+            {
+                control.GetComponent<ai>().solution.Insert(0, Convert.ToInt16(gameObject.name.Substring(4)) + 1);
+                solveB.GetComponentInChildren<UnityEngine.UI.Text>().text = "Perform next move (" + control.GetComponent<ai>().solution.Count.ToString() + ")";
+            }
+        }
     }
 
     void OnMouseOver()
@@ -52,6 +70,20 @@ public class cube_behaviour : MonoBehaviour {
             move();
             move();
             control.GetComponent<controller>().updatePos(gameObject, endMarker);
+
+            if (control.GetComponent<ai>().solution.Count != 0)
+            {
+                if (gameObject.name.Substring(4) == (control.GetComponent<ai>().solution[0] - 1).ToString())
+                {
+                    control.GetComponent<ai>().solution.RemoveAt(0);
+                    solveB.GetComponentInChildren<UnityEngine.UI.Text>().text = "Perform next move (" + control.GetComponent<ai>().solution.Count.ToString() + ")";
+                }
+                else
+                {
+                    control.GetComponent<ai>().solution.Insert(0, Convert.ToInt16(gameObject.name.Substring(4)) + 1);
+                    solveB.GetComponentInChildren<UnityEngine.UI.Text>().text = "Perform next move (" + control.GetComponent<ai>().solution.Count.ToString() + ")";
+                }
+            }
 
         }
     }
@@ -116,6 +148,27 @@ public class cube_behaviour : MonoBehaviour {
             move();
     }
 
+    public void aiClick()
+    {
+
+        endMarker = control.GetComponent<controller>().emptyPos;
+        endMarker = GameObject.Find(endMarker.gameObject.name);
+
+        moving = true;
+        move();
+        move();
+        move();
+        move();
+        move();
+        move();
+        move();
+        move();
+        move();
+        move();
+        control.GetComponent<controller>().updatePos(gameObject, endMarker, true);
+
+    }
+
     GameObject getNearest()
     {
 
@@ -140,7 +193,7 @@ public class cube_behaviour : MonoBehaviour {
 
     }
 
-    void move()
+    public void move()
     {
 
         if (moving == true)   

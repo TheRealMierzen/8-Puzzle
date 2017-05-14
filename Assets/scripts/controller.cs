@@ -21,15 +21,26 @@ public class controller : MonoBehaviour {
     public GameObject clock;
     public Canvas startsc;
     public GameObject input;
+    public GameObject[] goal = new GameObject[9];
+    public Canvas aiC;
 
-    bool ph = false;  
+    public Button lMBut;
+    public Button lPBut;
+    public TextMesh cnt;
+
+
+    bool custom = false;
+    bool ph = false;
+    bool win;
     float timer = 0;
 
     // Use this for initialization
-    void Start () {
+    void Start()
+    {
 
-        initializeField();
-	}
+        
+        
+    }
 
     private void Update()
     {
@@ -92,6 +103,31 @@ public class controller : MonoBehaviour {
 
     }
 
+    public void updatePos(GameObject c, GameObject actual, bool ia)
+    {
+
+        int indexC = System.Array.IndexOf(positions, c);
+        int newPos = System.Array.IndexOf(positions, null);
+
+        positions[indexC] = null;
+        positions[newPos] = c;
+
+        emptyPos = GameObject.Find(indexC.ToString());
+
+        moves += 1;
+
+        checkWin();
+
+        string cubeName = positions[newPos].name;
+        cubeName = cubeName.Substring(4);
+        int no;
+        int.TryParse(cubeName, out no);
+        no += 1;
+
+        fold.GetComponent<moves>().addMove(no.ToString() + " to " + (newPos + 1).ToString());
+
+    }
+
     //initialize play field
     void initializeField()
     {
@@ -127,6 +163,9 @@ public class controller : MonoBehaviour {
         
         getMovable(GameObject.Find(empty.ToString()));
         emptyPos = GameObject.Find(empty.ToString());
+
+        GetComponent<ai>().current_state = positions;
+        //GetComponent<ai>().enabled = true;
     }
 
     //enable moveables
@@ -191,8 +230,6 @@ public class controller : MonoBehaviour {
 
         }
 
-        //button vir move camera top down + rotation ..lerp
-        //regs click move dadelik
     }
 
     void moveForward()
@@ -234,11 +271,13 @@ public class controller : MonoBehaviour {
 
         cam.GetComponent<moveCamera>().move(new Vector3(-0.8665018f, 4.5235f, -6.037f), Quaternion.Euler(90, 0, 42.788f), false);
         phone.GetComponent<phone_camera>().ph = false;
+        lPBut.interactable = true;
     }
 
     public void load()
     {
         int empty = -1;
+        aiC.enabled = false;
 
         if (File.Exists(Application.persistentDataPath + "/playerInfo.dat"))
         {
@@ -256,7 +295,10 @@ public class controller : MonoBehaviour {
                 if (data.pois[i] != "")
                     positions[i] = GameObject.Find(data.pois[i]);
                 else
+                {
                     positions[i] = null;
+                    this.emptyPos = GameObject.Find(i.ToString());
+                }
 
             }
 
@@ -266,11 +308,12 @@ public class controller : MonoBehaviour {
             timer = data.time;
             GameObject.Find("Folder").GetComponent<moves>().moveList = data.mvs;
             GameObject.Find("Folder").GetComponent<moves>().fill(data.mvs);
-            GameObject.Find("count").GetComponent<TextMesh>().text = "Move count:" + data.mvs.Count.ToString();
+            cnt.text = "Move count:" + data.mvs.Count.ToString();
 
             empty = data.empt;
-
-
+            
+            
+            
             //move cubes na hulle plekke toe
             for (int tel = 0; tel <= 8; tel++)
             {
@@ -280,7 +323,7 @@ public class controller : MonoBehaviour {
                     positions[tel].transform.position = new Vector3(other.transform.position.x, other.transform.position.y, other.transform.position.z);
                 }
             }
-          
+            getMovable(emptyPos);
         }
 
         cam.GetComponent<moveCamera>().move(new Vector3(-0.8665018f, 4.5235f, -6.037f), Quaternion.Euler(90, 0, 42.788f), false);
@@ -289,28 +332,45 @@ public class controller : MonoBehaviour {
 
     void checkWin()
     {
-
-        bool win = true;
-        //open in last spot
-        for (int tel = 0; tel < 9; tel++)
+        
+        if (!custom)
         {
-
-            if (positions[tel] != GameObject.Find("Cube" + tel.ToString()))
-                win = false;
-
-        }
-        //open in first spot
-        if (!win)
-        {
-
-            for (int tel = 1; tel < 9; tel++)
+            win = true;
+            //open in last spot
+            for (int tel = 0; tel < 9; tel++)
             {
 
-                if (positions[tel] != GameObject.Find("Cube" + (tel - 1).ToString()))
+                if (positions[tel] != GameObject.Find("Cube" + tel.ToString()))
                     win = false;
 
             }
+            //open in first spot
+            if (!win)
+            {
 
+                for (int tel = 1; tel < 9; tel++)
+                {
+
+                    if (positions[tel] != GameObject.Find("Cube" + (tel - 1).ToString()))
+                        win = false;
+
+                }
+
+            }
+        }
+        else if(custom)
+        {
+
+            win = true;
+            for (int i = 0; i < 9; i++)
+            {
+
+                if (positions[i] != goal[i])
+                {
+                    win = false;
+                    break;
+                }
+            }
         }
 
         if (win)
@@ -335,7 +395,7 @@ public class controller : MonoBehaviour {
                     mins = min.ToString() + " minutes ";
                 else
                     mins = min.ToString() + " minute ";
-                winning.gameObject.GetComponent<Text>().text = "YOU WIN\nIt took you " + min.ToString() + "and " + seconds.ToString()+" seconds\nand " + moves.ToString() + " moves";
+                winning.gameObject.GetComponent<Text>().text = "YOU WIN\nIt took you " + min.ToString() + " minutes and " + seconds.ToString()+" seconds\nand " + moves.ToString() + " moves";
             }
             else
             {
@@ -367,6 +427,16 @@ public class controller : MonoBehaviour {
 
     }
 
+    public void solve()
+    {
+
+        cam.GetComponent<moveCamera>().move(new Vector3(-0.8665018f, 4.5235f, -6.037f), Quaternion.Euler(90, 0, 42.788f), false);
+        phone.GetComponent<phone_camera>().ph = false;
+        GetComponent<ai>().solve();
+        aiC.enabled = true;
+
+    }
+
     public Button rnd;
     public Button choose;
     public Button q;
@@ -374,7 +444,7 @@ public class controller : MonoBehaviour {
 
     public void startRandom()
     {
-
+        initializeField();
         startsc.enabled = false;
         timer = 0;
     }
@@ -398,13 +468,12 @@ public class controller : MonoBehaviour {
     public InputField c6;
     public InputField c7;
     public InputField c8;
+    public InputField e;
 
     public void startLayout()
     {
 
-        
-
-        if (c1.text.Length == 1 && c2.text.Length == 1 && c3.text.Length == 1 && c4.text.Length == 1 && c5.text.Length == 1 && c6.text.Length == 1 && c7.text.Length == 1 && c8.text.Length == 1)
+        if (c1.text.Length == 1 && c2.text.Length == 1 && c3.text.Length == 1 && c4.text.Length == 1 && c5.text.Length == 1 && c6.text.Length == 1 && c7.text.Length == 1 && c8.text.Length == 1 && e.text.Length == 1)
         {
 
             List<string> nos = new List<string> {"1", "2", "3", "4", "5", "6", "7", "8", "9"};
@@ -462,8 +531,37 @@ public class controller : MonoBehaviour {
                 }
 
                 getMovable(emptyPos);
+                GetComponent<ai>().current_state = positions;
+                GetComponent<ai>().goal_state = setGoal(e.text);
+                goal = setGoal(e.text);
+                custom = true;
             }
         }
+    }
+
+    GameObject[] setGoal (string endEmpty)
+    {
+
+        GameObject[] g = new GameObject[9];
+        int end = Convert.ToInt16(endEmpty) - 1;
+        int c = 0;
+
+        for(int i = 0; i < 9; i++)
+        {
+
+            if (i != end)
+            {
+                
+                g[i] = GameObject.Find("Cube" + c.ToString());
+                c++;
+
+            }
+            else
+                g[i] = null;
+
+        }
+
+        return g;
     }
 
     public void back()
@@ -475,6 +573,22 @@ public class controller : MonoBehaviour {
         l.gameObject.SetActive(true);
         input.SetActive(false);
         
+    }
+
+    private void OnLevelWasLoaded(int level)
+    {
+        if (File.Exists(Application.persistentDataPath + "/playerInfo.dat"))
+        {
+
+            lMBut.interactable = true;
+            lPBut.interactable = true;
+
+        }
+        else
+        {
+            lMBut.interactable = true;
+            lPBut.interactable = true;
+        }
     }
 }
 
