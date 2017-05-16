@@ -23,8 +23,6 @@ public class ai : MonoBehaviour {
     public GameObject[] cubes = new GameObject[8];
     public UnityEngine.UI.Button solveButton;
 
-
-
     public void solve()
     {
 
@@ -256,10 +254,18 @@ public class ai : MonoBehaviour {
 
     bool solvable(List<int> pList)
     {
-        int invCount = getInvCount(c_int);
-
-        // return true if inversion count is even.
-        return ((invCount % 2) == 0);
+        int startCount = getInvCount(c_int);
+        int endCount = getInvCount(goal_int);
+        int startInv;
+        int endInv;
+       
+        startInv = startCount % 2;
+        endInv = endCount % 2;
+        
+        if (startInv == endInv)
+            return true;
+        else
+            return false;
 
     }
 
@@ -381,7 +387,6 @@ public class Node : MonoBehaviour
     //tree
     public int depth;
     public int move; //cube moved to reach the state of this Node
-    public int f;
     //extra
     public int missed;
     public List<int> state;
@@ -407,10 +412,6 @@ public class Node : MonoBehaviour
         children = c;
     }
 
-    public void setSiblings(List<Node> s)
-    {
-        siblings = s;
-    }
     //////
     public void setMove(int m)
 
@@ -446,11 +447,6 @@ public class Node : MonoBehaviour
     public void setState(List<int> s)
     {
         state = s;
-    }
-
-    public List<int> getState()
-    {
-        return this.state;
     }
 
     public int rowLookup(int i)

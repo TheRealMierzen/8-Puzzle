@@ -445,6 +445,14 @@ public class controller : MonoBehaviour {
     public void startRandom()
     {
         initializeField();
+        goal[0] = GameObject.Find("Cube0");
+        goal[1] = GameObject.Find("Cube1");
+        goal[2] = GameObject.Find("Cube2");
+        goal[3] = GameObject.Find("Cube3");
+        goal[4] = GameObject.Find("Cube4");
+        goal[5] = GameObject.Find("Cube5");
+        goal[6] = GameObject.Find("Cube6");
+        goal[7] = GameObject.Find("Cube7");
         startsc.enabled = false;
         timer = 0;
     }
@@ -468,73 +476,112 @@ public class controller : MonoBehaviour {
     public InputField c6;
     public InputField c7;
     public InputField c8;
-    public InputField e;
+
+    public InputField e1;
+    public InputField e2;
+    public InputField e3;
+    public InputField e4;
+    public InputField e5;
+    public InputField e6;
+    public InputField e7;
+    public InputField e8;
+
 
     public void startLayout()
     {
-
-        if (c1.text.Length == 1 && c2.text.Length == 1 && c3.text.Length == 1 && c4.text.Length == 1 && c5.text.Length == 1 && c6.text.Length == 1 && c7.text.Length == 1 && c8.text.Length == 1 && e.text.Length == 1)
+        
+        if (c1.text.Length == 1 && c2.text.Length == 1 && c3.text.Length == 1 && c4.text.Length == 1 && c5.text.Length == 1 && c6.text.Length == 1 && c7.text.Length == 1 && c8.text.Length == 1)
         {
+            
+            if (e1.text.Length == 1 && e2.text.Length == 1 && e3.text.Length == 1 && e4.text.Length == 1 && e5.text.Length == 1 && e6.text.Length == 1 && e7.text.Length == 1 && e8.text.Length == 1)
+            { 
+                List<string> nos = new List<string> { "1", "2", "3", "4", "5", "6", "7", "8", "9" };
+                List<string> endPos = new List<string> { "1", "2", "3", "4", "5", "6", "7", "8", "9" };
+                bool valid = true;
 
-            List<string> nos = new List<string> {"1", "2", "3", "4", "5", "6", "7", "8", "9"};
+                if (nos.Contains(c1.text))
+                    nos.Remove(c1.text);
+                if (nos.Contains(c2.text))
+                    nos.Remove(c2.text);
+                if (nos.Contains(c3.text))
+                    nos.Remove(c3.text);
+                if (nos.Contains(c4.text))
+                    nos.Remove(c4.text);
+                if (nos.Contains(c5.text))
+                    nos.Remove(c5.text);
+                if (nos.Contains(c6.text))
+                    nos.Remove(c6.text);
+                if (nos.Contains(c7.text))
+                    nos.Remove(c7.text);
+                if (nos.Contains(c8.text))
+                    nos.Remove(c8.text);
 
-            bool valid = true;
+                if (endPos.Contains(e1.text))
+                    endPos.Remove(e1.text);
+                if (endPos.Contains(e2.text))
+                    endPos.Remove(e2.text);
+                if (endPos.Contains(e3.text))
+                    endPos.Remove(e3.text);
+                if (endPos.Contains(e4.text))
+                    endPos.Remove(e4.text);
+                if (endPos.Contains(e5.text))
+                    endPos.Remove(e5.text);
+                if (endPos.Contains(e6.text))
+                    endPos.Remove(e6.text);
+                if (endPos.Contains(e7.text))
+                    endPos.Remove(e7.text);
+                if (endPos.Contains(e8.text))
+                    endPos.Remove(e8.text);
 
-            if(nos.Contains(c1.text))
-                nos.Remove(c1.text);
-            if (nos.Contains(c2.text))
-                nos.Remove(c2.text);
-            if (nos.Contains(c3.text))
-                nos.Remove(c3.text);
-            if (nos.Contains(c4.text))
-                nos.Remove(c4.text);
-            if (nos.Contains(c5.text))
-                nos.Remove(c5.text);
-            if (nos.Contains(c6.text))
-                nos.Remove(c6.text);
-            if (nos.Contains(c7.text))
-                nos.Remove(c7.text);
-            if (nos.Contains(c8.text))
-                nos.Remove(c8.text);
+                if (nos.Count != 1 || endPos.Count != 1)
+                    valid = false;
 
-            if (nos.Count != 1)
-                valid = false;
-
-            if (valid)
-            {
-                startsc.enabled = false;
-                timer = 0;
-                moves = 0;
-                GameObject.Find("Folder").GetComponent<moves>().moveList.Clear();
-                GameObject.Find("Count").GetComponent<TextMesh>().text = "Move count: 0";
-                GameObject.Find("mvList").GetComponent<TextMesh>().text = "";
-
-                Array.Clear(positions, 0, positions.Length);
-
-                positions[Convert.ToInt16(c1.text) - 1] = GameObject.Find("Cube0");
-                positions[Convert.ToInt16(c2.text) - 1] = GameObject.Find("Cube1");
-                positions[Convert.ToInt16(c3.text) - 1] = GameObject.Find("Cube2");
-                positions[Convert.ToInt16(c4.text) - 1] = GameObject.Find("Cube3");
-                positions[Convert.ToInt16(c5.text) - 1] = GameObject.Find("Cube4");
-                positions[Convert.ToInt16(c6.text) - 1] = GameObject.Find("Cube5");
-                positions[Convert.ToInt16(c7.text) - 1] = GameObject.Find("Cube6");
-                positions[Convert.ToInt16(c8.text) - 1] = GameObject.Find("Cube7");
-
-                for (int tel = 0; tel < 9; tel++)
+                if (valid)
                 {
-                    if (positions[tel] != null)
-                        positions[tel].transform.position = GameObject.Find(tel.ToString()).transform.position;
-                    else
-                    {
-                        emptyPos = GameObject.Find(tel.ToString());
-                    }
-                }
+          
+                    startsc.enabled = false;
+                    timer = 0;
+                    moves = 0;
+                    GameObject.Find("Folder").GetComponent<moves>().moveList.Clear();
+                    GameObject.Find("Count").GetComponent<TextMesh>().text = "Move count: 0";
+                    GameObject.Find("mvList").GetComponent<TextMesh>().text = "";
 
-                getMovable(emptyPos);
-                GetComponent<ai>().current_state = positions;
-                GetComponent<ai>().goal_state = setGoal(e.text);
-                goal = setGoal(e.text);
-                custom = true;
+                    Array.Clear(positions, 0, positions.Length);
+
+                    positions[Convert.ToInt16(c1.text) - 1] = GameObject.Find("Cube0");
+                    positions[Convert.ToInt16(c2.text) - 1] = GameObject.Find("Cube1");
+                    positions[Convert.ToInt16(c3.text) - 1] = GameObject.Find("Cube2");
+                    positions[Convert.ToInt16(c4.text) - 1] = GameObject.Find("Cube3");
+                    positions[Convert.ToInt16(c5.text) - 1] = GameObject.Find("Cube4");
+                    positions[Convert.ToInt16(c6.text) - 1] = GameObject.Find("Cube5");
+                    positions[Convert.ToInt16(c7.text) - 1] = GameObject.Find("Cube6");
+                    positions[Convert.ToInt16(c8.text) - 1] = GameObject.Find("Cube7");
+
+                    goal[Convert.ToInt16(e1.text) - 1] = GameObject.Find("Cube0");
+                    goal[Convert.ToInt16(e2.text) - 1] = GameObject.Find("Cube1");
+                    goal[Convert.ToInt16(e3.text) - 1] = GameObject.Find("Cube2");
+                    goal[Convert.ToInt16(e4.text) - 1] = GameObject.Find("Cube3");
+                    goal[Convert.ToInt16(e5.text) - 1] = GameObject.Find("Cube4");
+                    goal[Convert.ToInt16(e6.text) - 1] = GameObject.Find("Cube5");
+                    goal[Convert.ToInt16(e7.text) - 1] = GameObject.Find("Cube6");
+                    goal[Convert.ToInt16(e8.text) - 1] = GameObject.Find("Cube7");
+
+                    for (int tel = 0; tel < 9; tel++)
+                    {
+                        if (positions[tel] != null)
+                            positions[tel].transform.position = GameObject.Find(tel.ToString()).transform.position;
+                        else
+                        {
+                            emptyPos = GameObject.Find(tel.ToString());
+                        }
+                    }
+
+                    getMovable(emptyPos);
+                    GetComponent<ai>().current_state = positions;
+                    GetComponent<ai>().goal_state = goal;
+                    
+                    custom = true;
+                }
             }
         }
     }
